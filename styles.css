@@ -1,1 +1,50 @@
 /*  your css code here. If applicable */
+body {
+  font-family: Arial;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.container h1 {
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 36px;
+}
+
+input {
+  margin: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.board {
+  width: 300px;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  border: 2px solid black;
+  font-size: 50px;
+  line-height: 100px;
+  background-color: pink;
+  cursor: pointer;
+}
+
+.winning-cell {
+  background-color: purple !important;
+  color: white;
+}
+
+.message {
+  font-size: 20px;
+  margin-top: 15px;
+}
