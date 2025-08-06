@@ -1,66 +1,65 @@
-//your JS code here. If required.
-let currentPlayer = "X";
-let player1 = "";
-let player2 = "";
-let board = Array(9).fill("");
-let gameOver = false;
+document.addEventListener("DOMContentLoaded", () => {
+    const player1Input = document.getElementById("player1");
+    const player2Input = document.getElementById("player2");
+    const submitBtn = document.getElementById("submit");
+    const message = document.querySelector(".message");
+    const gameDiv = document.getElementById("game");
+    const boardCells = document.querySelectorAll(".cell");
 
-document.getElementById("submit").addEventListener("click", () => {
-  player1 = document.getElementById("player-1").value.trim();
-  player2 = document.getElementById("player-2").value.trim();
+    let players = ["Player 1", "Player 2"];
+    let currentPlayer = "x";
+    let gameActive = false;
+    let boardState = ["", "", "", "", "", "", "", "", ""];
 
-  if (!player1 || !player2) {
-    alert("Please enter both player names!");
-    return;
-  }
+    submitBtn.addEventListener("click", () => {
+        players = [
+            player1Input.value.trim() || "Player 1",
+            player2Input.value.trim() || "Player 2"
+        ];
+        
+        gameDiv.style.display = "block";
+        message.textContent = ${players[0]}, you're up!;
+        gameActive = true;
 
-  document.getElementById("form-section").style.display = "none";
-  document.getElementById("game-section").style.display = "block";
-  document.querySelector(".message").innerText = `${player1}, you're up`;
-});
+        // Reset board
+        boardState.fill("");
+        boardCells.forEach(cell => {
+            cell.textContent = "";
+        });
 
-document.querySelectorAll(".cell").forEach((cell) => {
-  cell.addEventListener("click", () => {
-    if (gameOver || cell.innerText !== "") return;
+        currentPlayer = "x";  // Reset to first player
+    });
 
-    const id = parseInt(cell.id) - 1;
-    board[id] = currentPlayer;
-    cell.innerText = currentPlayer;
+    boardCells.forEach((cell, index) => {
+        cell.addEventListener("click", () => {
+            if (!gameActive || boardState[index] !== "") return;
 
-    const winner = checkWinner();
+            boardState[index] = currentPlayer;
+            cell.textContent = currentPlayer;
 
-    if (winner) {
-      gameOver = true;
-      const name = currentPlayer === "X" ? player1 : player2;
-      document.querySelector(".message").innerText = `${name}, congratulations you won!`;
-      highlightWinningCells(winner.combo);
-    } else {
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
-      const nextPlayer = currentPlayer === "X" ? player1 : player2;
-      document.querySelector(".message").innerText = `${nextPlayer}, you're up`;
+            setTimeout(() => {
+                if (checkWinner()) {
+                    message.textContent = ${currentPlayer === "x" ? players[0] : players[1]} congratulations you won!;
+                    gameActive = false;
+                    return;
+                }
+
+                currentPlayer = currentPlayer === "x" ? "o" : "x";
+                message.textContent = ${currentPlayer === "x" ? players[0] : players[1]}, you're up!;
+            }, 50);
+        });
+    });
+
+    function checkWinner() {
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        return winPatterns.some(pattern => {
+            const [a, b, c] = pattern;
+            return boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c];
+        });
     }
-  });
 });
-
-function checkWinner() {
-  const winCombos = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-    [0, 4, 8], [2, 4, 6]             // diagonals
-  ];
-
-  for (let combo of winCombos) {
-    const [a, b, c] = combo;
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return { player: board[a], combo };
-    }
-  }
-
-  return null;
-}
-
-function highlightWinningCells(cells) {
-  cells.forEach((index) => {
-    document.getElementById((index + 1).toString()).classList.add("winning-cell");
-  });
-}
